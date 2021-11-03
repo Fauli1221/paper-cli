@@ -48,6 +48,6 @@ def cligui():
 def cliargs():
     praser = argparse.ArgumentParser(description='Arguments')
     praser.add_argument("--projects", "-p", type=float,
-                        help="select the paper project ['paper', 'travertine', 'waterfall']")
+                        help="select the paper project ['paper (0)', 'travertine (1)', 'waterfall (2)']")
     args = praser.parse_args()
 
