@@ -1,8 +1,9 @@
-import sys
 import argparse
-from papercli.textgen import *
+import sys
 import urllib.request
+
 from papercli.save import selected_builds, selected_mc_version, projects_list, build_name
+from papercli.textgen import *
 
 
 def cli_main():
@@ -28,11 +29,14 @@ def cligui():
     mcversion = input('Your Input: ')
     build_list(int(project), int(mcversion))
     build_input = input('Your Input: ')
-    build = selected_builds[int(build_input)*2+1]
-    version = selected_mc_version[int(build_input)*2+1]
+    build = selected_builds[int(build_input) * 2 + 1]
+    version = selected_mc_version[int(build_input) * 2 + 1]
     p_project = projects_list[int(project)]
-    filename = build_name[int(build_input)*2+1]
-    print('Do you want to Downloade {projectname} build {build} for MC version {mcversion}?'.format(projectname=p_project, build=build, mcversion=version))
+    filename = build_name[int(build_input) * 2 + 1]
+    print(
+        'Do you want to Downloade {projectname} build {build} for MC version {mcversion}?'.format(projectname=p_project,
+                                                                                                  build=build,
+                                                                                                  mcversion=version))
     downloade_question = input('(y/n): ').lower()
     if downloade_question == "y":
         downloade(build, version, p_project, filename)
@@ -50,4 +54,3 @@ def cliargs():
     praser.add_argument("--projects", "-p", type=float,
                         help="select the paper project ['paper (0)', 'travertine (1)', 'waterfall (2)']")
     args = praser.parse_args()
-
