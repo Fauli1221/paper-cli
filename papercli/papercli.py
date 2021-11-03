@@ -1,8 +1,8 @@
 import sys
 import argparse
-from textgen import *
+from papercli.textgen import *
 import urllib.request
-from save import selected_builds, selected_mc_version, projects_list, build_name
+from papercli.save import selected_builds, selected_mc_version, projects_list, build_name
 
 
 def cli_main():

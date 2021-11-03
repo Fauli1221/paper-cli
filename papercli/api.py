@@ -1,6 +1,5 @@
 import requests
-import json
-from save import *
+from papercli.save import *
 
 
 def api_requests(url):

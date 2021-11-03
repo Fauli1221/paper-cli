@@ -1,6 +1,6 @@
-from api import *
+from papercli.api import *
 from rich import print
-from save import selected_builds, selected_mc_version, build_name
+from papercli.save import selected_builds, selected_mc_version, build_name
 import re
 
 
