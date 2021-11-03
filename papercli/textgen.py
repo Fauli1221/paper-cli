@@ -21,7 +21,6 @@ def version_group_list(project_number):
 def build_list(project_number, mc_version):
     counter = 0
     returnvalue = version_group_builds(project_number, mc_version)
-    print(returnvalue)
     sorted_val = sorted(returnvalue, key=lambda k: k['build'], reverse=True)
     for item in sorted_val:
         try:
