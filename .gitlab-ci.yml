@@ -1,12 +1,39 @@
 # You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# See https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+# See https://docs.gitlab.com/ee/ci/variables/#priority-of-environment-variables
+image: python:3.9
+before_script:
+- python --version
+- pip install -r requirements.txt
+
 stages:
-- test
+- Static Analysis
+- deploy
+
+flake8:
+  stage: Static Analysis
+  script:
+  - pip install flake8
+  - flake8 --max-line-length=120 ./papercli/*.py
+
+pylint:
+  stage: Static Analysis
+  script:
+  - pip install pylint
+  - pylint ./papercli/*.py
+
 sast:
-  stage: test
+  stage: Static Analysis
 include:
 - template: Security/SAST.gitlab-ci.yml
+
+deploy:
+  stage: deploy
+  script:
+  - pip install --upgrade setuptools
+  - pip install build
+  - python -m build
+  artifacts:
+    paths:
+    - dist
