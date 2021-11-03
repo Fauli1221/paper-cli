@@ -28,7 +28,7 @@ def version_group_builds(selected_project, groop):
     build_infos_version_group_json = api_requests(
         'https://papermc.io/api/v2/projects/' + projects_list[selected_project] + '/version_group/' +
         version_groups_list[groop] + '/builds')
-    return build_infos_version_group_json['builds'][-20:]
+    return build_infos_version_group_json['builds'][-15:]
 
 
 def versions(selected_project):
