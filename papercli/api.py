@@ -1,7 +1,7 @@
 """import request"""
 import requests
 
-from papercli.save import projects_list, version_groups_list, versions_list, build_list
+from papercli.save import projects_list, version_groups_list, versions_list, builds_list
 
 
 def api_requests(url):
@@ -45,17 +45,17 @@ def versions(selected_project):
 
 
 def builds(selected_project, mc_version):
-    """Get build_list"""
+    """Get builds_list"""
     builds_json = api_requests('https://papermc.io/api/v2/projects/' + projects_list[selected_project] + '/versions/' +
                                versions_list[mc_version])
     for item in builds_json['builds']:
-        build_list.append(item)
-    return build_list[-15:]
+        builds_list.append(item)
+    return builds_list
 
 
 def build_info(selected_project, mc_version, build):
     """get build_info_json"""
     build_info_json = api_requests(
         'https://papermc.io/api/v2/projects/' + projects_list[selected_project] + '/versions/' +
-        versions_list[mc_version] + '/builds/' + str(build_list[build]))
+        versions_list[mc_version] + '/builds/' + str(build))
     return build_info_json

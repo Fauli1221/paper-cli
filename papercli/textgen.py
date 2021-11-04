@@ -3,14 +3,14 @@ import re
 
 from rich import print
 
-from papercli.api import projects, version_groups, version_group_builds
+from papercli.api import version_groups, version_group_builds
 from papercli.save import selected_builds, selected_mc_version, build_name, projects_list
 
 
 def project_list():
     """List Project's"""
     counter = 0
-    for item in projects():
+    for item in projects_list:
         print('(' + str(counter) + ') ' + item)
         counter += 1
 
@@ -50,12 +50,18 @@ def build_list(project_number, mc_version):
                                                                              commitshort=str(
                                                                                  item['changes'][0]['commit'])[
                                                                                          :7], summary=formated_summary))
-            build_name.append(counter)
-            build_name.append(item['downloads']['application']['name'])
-            selected_builds.append(counter)
-            selected_builds.append(item['build'])
-            selected_mc_version.append(counter)
-            selected_mc_version.append(item['version'])
-            counter += 1
+            counter = infosave(counter, item)
         except IndexError:
             print('an issue ocured skiping ' + str(item['build']))
+            counter = infosave(counter, item)
+
+
+def infosave(counter, item):
+    build_name.append(counter)
+    build_name.append(item['downloads']['application']['name'])
+    selected_builds.append(counter)
+    selected_builds.append(item['build'])
+    selected_mc_version.append(counter)
+    selected_mc_version.append(item['version'])
+    counter += 1
+    return counter
