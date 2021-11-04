@@ -52,7 +52,7 @@ def build_list(project_number, mc_version):
                                                                                          :7], summary=formated_summary))
             counter = infosave(counter, item)
         except IndexError:
-            print('an issue ocured skiping ' + str(item['build']))
+            print('      there was no info found about ' + str(item['build']))
             counter = infosave(counter, item)
 
 

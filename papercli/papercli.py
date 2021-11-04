@@ -47,6 +47,7 @@ def cligui(your_filename):
     if downloade_question == "y":
         downloade(build, version, p_project, filename, your_filename)
         print('Downloadet')
+        sys.exit(0)
     elif downloade_question == "n":
         print('exiting')
         sys.exit(0)
@@ -71,7 +72,8 @@ def cliargs():
         your_filename = args.filename
     if args.projects is None:
         cligui(your_filename)
-    arg_check(args, your_filename)
+    else:
+        arg_check(args, your_filename)
 
 
 def arg_paper():
@@ -103,29 +105,26 @@ def fetch_latest(project_id, your_filename):
 
 def arg_check(args, your_filename):
     """argument logik"""
-    switch = {
-        "paper": arg_paper,
-        "travertine": arg_travertine,
-        "arg_waterfall": arg_waterfall
-    }
-    project_id = switch[args.projects]()
-    if args.latest:
-        fetch_latest(project_id, your_filename)
-    elif args.version:
-        version = args.version
-        if args.build:
-            build = args.build
-        else:
-            build = builds(project_id, versions(project_id).index(version))[-1]
-            print(build)
-    else:
-        print('is this even reachable')
-    print(builds_list)
-    print(versions_list, builds_list.index(build))
-    latest_build_info = build_info(project_id, versions_list.index(version), build)
-    print(project_id, versions_list.index(version), build)
-    print(latest_build_info)
-    filename = latest_build_info['downloads']['application']['name']
-    if your_filename is None:
-        your_filename = str(projects_list[project_id]) + '.jar'
-    downloade(build, version, projects_list[project_id], filename, your_filename)
+    try:
+        switch = {
+            "paper": arg_paper,
+            "travertine": arg_travertine,
+            "arg_waterfall": arg_waterfall
+        }
+        project_id = switch[args.projects]()
+        if args.latest:
+            fetch_latest(project_id, your_filename)
+        elif args.version:
+            version = args.version
+            if args.build:
+                build = args.build
+            else:
+                build = builds(project_id, versions(project_id).index(version))[-1]
+                print(build)
+        latest_build_info = build_info(project_id, versions_list.index(version), build)
+        filename = latest_build_info['downloads']['application']['name']
+        if your_filename is None:
+            your_filename = str(projects_list[project_id]) + '.jar'
+        downloade(build, version, projects_list[project_id], filename, your_filename)
+    except KeyError:
+        sys.exit(1)
