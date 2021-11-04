@@ -140,4 +140,3 @@ def arg_check(args, your_filename):
     except UnboundLocalError:
         print("an error ocurred please check your input")
         sys.exit(2)
-
