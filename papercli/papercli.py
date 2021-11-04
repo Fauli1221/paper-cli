@@ -1,5 +1,5 @@
-# import argparse
-"""import sys urllib request and textgen and save"""
+"""import argparse sys urllib request and textgen and save"""
+import argparse
 import sys
 import urllib.request
 
@@ -10,7 +10,7 @@ from papercli.textgen import project_list, version_group_list, build_list
 def cli_main():
     """Main"""
     try:
-        # cliargs()
+        cliargs()
         cligui()
     except KeyboardInterrupt:
         # quit
@@ -49,8 +49,29 @@ def cligui():
         print('error invalid anser exeting')
         sys.exit(1)
 
-# def cliargs():
-# praser = argparse.ArgumentParser(description='Arguments')
-# praser.add_argument("--projects", "-p", type=float,
-#    help="select the paper project ['paper (0)', 'travertine (1)', 'waterfall (2)']")
-# args = praser.parse_args()
+
+def cliargs():
+    praser = argparse.ArgumentParser(description='Arguments')
+    praser.add_argument("--projects", "-p", type=str,
+                        help="select the paper project ['paper', 'travertine', 'waterfall']")
+    praser.add_argument("--latest", type=bool, help="Downloade latest version")
+    args = praser.parse_args()
+    switch = {
+        "paper": arg_paper,
+        "travertine": arg_travertine,
+        "arg_waterfall": arg_waterfall
+    }
+    project_id = switch[args.projects]
+    print(project_id)
+
+
+def arg_paper():
+    return '0'
+
+
+def arg_travertine():
+    return '1'
+
+
+def arg_waterfall():
+    return '2'
