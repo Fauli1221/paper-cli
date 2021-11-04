@@ -36,10 +36,7 @@ def cligui():
     version = selected_mc_version[int(build_input) * 2 + 1]
     p_project = projects_list[int(project)]
     filename = build_name[int(build_input) * 2 + 1]
-    print(
-        'Do you want to Downloade {projectname} build {build} for MC version {mcversion}?'.format(projectname=p_project,
-                                                                                                  build=build,
-                                                                                                  mcversion=version))
+    print(f'Do you want to Downloade {p_project} build {build} for MC version {version}?')
     downloade_question = input('(y/n): ').lower()
     if downloade_question == "y":
         downloade(build, version, p_project, filename)
