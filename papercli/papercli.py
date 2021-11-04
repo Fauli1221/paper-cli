@@ -61,8 +61,7 @@ def cliargs():
         "travertine": arg_travertine,
         "arg_waterfall": arg_waterfall
     }
-    project_id = switch[args.projects]
-    print(project_id)
+    project_id = switch[args.projects]()
 
 
 def arg_paper():
