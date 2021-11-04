@@ -1,4 +1,5 @@
 # import argparse
+"""import sys urllib request and textgen and save"""
 import sys
 import urllib.request
 

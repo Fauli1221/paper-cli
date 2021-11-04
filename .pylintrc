@@ -404,7 +404,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=
+ignored-modules=W0622
 
 # Show a hint with possible names when a member name was not found. The aspect
 # of finding the hint is based on edit distance.
@@ -485,7 +485,7 @@ valid-metaclass-classmethod-first-arg=cls
 
 # List of qualified class names to ignore when counting class parents (see
 # R0901)
-ignored-parents=W0622
+ignored-parents=
 
 # Maximum number of arguments for function / method.
 max-args=5
