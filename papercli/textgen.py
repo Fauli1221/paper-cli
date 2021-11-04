@@ -57,6 +57,7 @@ def build_list(project_number, mc_version):
 
 
 def infosave(counter, item):
+    """save info"""
     build_name.append(counter)
     build_name.append(item['downloads']['application']['name'])
     selected_builds.append(counter)

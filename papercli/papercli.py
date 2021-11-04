@@ -56,6 +56,7 @@ def cligui(your_filename):
 
 
 def cliargs():
+    """create cli args"""
     praser = argparse.ArgumentParser(description='Arguments')
     praser.add_argument("--projects", "-p", type=str, choices=projects_list,
                         help=f"select the paper project {projects_list}")
@@ -74,18 +75,22 @@ def cliargs():
 
 
 def arg_paper():
+    """return paper id"""
     return 0
 
 
 def arg_travertine():
+    """return travertine id"""
     return 1
 
 
 def arg_waterfall():
+    """return waterfall id"""
     return 2
 
 
-def fetch_latest(project_id):
+def fetch_latest(project_id, your_filename):
+    """fetch latst build"""
     projects()
     versions(project_id)
     latest_version = len(versions_list) - 1
@@ -93,19 +98,19 @@ def fetch_latest(project_id):
     latest_build = len(builds_list) - 1
     latest_build_info = build_info(project_id, latest_version, latest_build)
     filename = latest_build_info['downloads']['application']['name']
-    downloade(builds_list[-1], versions_list[-1], projects_list[project_id], filename)
+    downloade(builds_list[-1], versions_list[-1], projects_list[project_id], filename, your_filename)
 
 
 def arg_check(args, your_filename):
+    """argument logik"""
     switch = {
         "paper": arg_paper,
         "travertine": arg_travertine,
         "arg_waterfall": arg_waterfall
     }
-
     project_id = switch[args.projects]()
     if args.latest:
-        fetch_latest(project_id)
+        fetch_latest(project_id, your_filename)
     elif args.version:
         version = args.version
         if args.build:
@@ -124,5 +129,3 @@ def arg_check(args, your_filename):
     if your_filename is None:
         your_filename = str(projects_list[project_id]) + '.jar'
     downloade(build, version, projects_list[project_id], filename, your_filename)
-
-
