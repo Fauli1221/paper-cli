@@ -1,6 +1,6 @@
 import requests
 
-from papercli.save import *
+from papercli.save import projects_list, version_groups_list, versions_list, build_list
 
 
 def api_requests(url):

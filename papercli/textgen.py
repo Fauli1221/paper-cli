@@ -2,8 +2,8 @@ import re
 
 from rich import print
 
-from papercli.api import *
-from papercli.save import selected_builds, selected_mc_version, build_name
+from papercli.api import projects, version_groups, version_group_builds
+from papercli.save import selected_builds, selected_mc_version, build_name, projects_list
 
 
 def project_list():

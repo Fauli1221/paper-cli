@@ -3,7 +3,7 @@ import sys
 import urllib.request
 
 from papercli.save import selected_builds, selected_mc_version, projects_list, build_name
-from papercli.textgen import *
+from papercli.textgen import project_list, version_group_list, build_list
 
 
 def cli_main():
