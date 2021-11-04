@@ -1,4 +1,4 @@
-import argparse
+# import argparse
 import sys
 import urllib.request
 
@@ -7,6 +7,7 @@ from papercli.textgen import project_list, version_group_list, build_list
 
 
 def cli_main():
+    """Main"""
     try:
         # cliargs()
         cligui()
@@ -16,11 +17,13 @@ def cli_main():
 
 
 def downloade(build, version, p_project, filename):
+    """Downloade File"""
     url = f'https://papermc.io/api/v2/projects/{p_project}/versions/{version}/builds/{build}/downloads/{filename}'
     urllib.request.urlretrieve(url, fr'./{p_project}.jar')
 
 
 def cligui():
+    """Cli GUI"""
     print('Welcome to paper-cli please chose one of the following projects by there corresponding number')
     project_list()
     project = input('Your Input: ')

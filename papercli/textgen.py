@@ -7,6 +7,7 @@ from papercli.save import selected_builds, selected_mc_version, build_name, proj
 
 
 def project_list():
+    """List Project's"""
     counter = 0
     for item in projects():
         print('(' + str(counter) + ') ' + item)
@@ -14,6 +15,7 @@ def project_list():
 
 
 def version_group_list(project_number):
+    """List Versions"""
     counter = 0
     for item in version_groups(project_number):
         print('(' + str(counter) + ') ' + item)
@@ -21,6 +23,7 @@ def version_group_list(project_number):
 
 
 def build_list(project_number, mc_version):
+    """List Builds"""
     counter = 0
     returnvalue = version_group_builds(project_number, mc_version)
     sorted_val = sorted(returnvalue, key=lambda k: k['build'], reverse=True)
