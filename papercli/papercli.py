@@ -8,7 +8,7 @@ from papercli.textgen import project_list, version_group_list, build_list
 
 def cli_main():
     try:
-        cliargs()
+        # cliargs()
         cligui()
     except KeyboardInterrupt:
         # quit
@@ -48,9 +48,8 @@ def cligui():
         print('error invalid anser exeting')
         sys.exit(1)
 
-
-def cliargs():
-    praser = argparse.ArgumentParser(description='Arguments')
-    praser.add_argument("--projects", "-p", type=float,
-                        help="select the paper project ['paper (0)', 'travertine (1)', 'waterfall (2)']")
-    args = praser.parse_args()
+# def cliargs():
+# praser = argparse.ArgumentParser(description='Arguments')
+# praser.add_argument("--projects", "-p", type=float,
+#    help="select the paper project ['paper (0)', 'travertine (1)', 'waterfall (2)']")
+# args = praser.parse_args()
