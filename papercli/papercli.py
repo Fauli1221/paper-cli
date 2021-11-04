@@ -120,11 +120,24 @@ def arg_check(args, your_filename):
                 build = args.build
             else:
                 build = builds(project_id, versions(project_id).index(version))[-1]
-                print(build)
-        latest_build_info = build_info(project_id, versions_list.index(version), build)
-        filename = latest_build_info['downloads']['application']['name']
+        try:
+            sel_version = versions(project_id).index(version)
+        except ValueError:
+            print("an error ocurred please check your input")
+            sys.exit(3)
+        try:
+            latest_build_info = build_info(project_id, sel_version, build)
+            filename = latest_build_info['downloads']['application']['name']
+        except KeyError:
+            print("an error ocurred please check your input")
+            sys.exit(4)
         if your_filename is None:
             your_filename = str(projects_list[project_id]) + '.jar'
         downloade(build, version, projects_list[project_id], filename, your_filename)
     except KeyError:
+        print("an error ocurred please check your input")
         sys.exit(1)
+    except UnboundLocalError:
+        print("an error ocurred please check your input")
+        sys.exit(2)
+
