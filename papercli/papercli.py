@@ -11,7 +11,6 @@ def cli_main():
     """Main"""
     try:
         cliargs()
-        cligui()
     except KeyboardInterrupt:
         # quit
         sys.exit(-1)
@@ -61,7 +60,10 @@ def cliargs():
         "travertine": arg_travertine,
         "arg_waterfall": arg_waterfall
     }
-    project_id = switch[args.projects]()
+    try:
+        project_id = switch[args.projects]()
+    except KeyError:
+        cligui()
 
 
 def arg_paper():
