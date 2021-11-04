@@ -5,7 +5,7 @@ setup(
     version='0.1.3',
     packages=['papercli'],
     install_requires=[
-        'requests'
+        'requests',
         'rich'
     ],
     entry_points={
