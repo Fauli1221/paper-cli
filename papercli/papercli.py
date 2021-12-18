@@ -3,7 +3,7 @@ import argparse
 import sys
 import urllib.request
 
-from papercli.api import projects, versions, builds, build_info
+from papercli.api import PaperApi, Project, Build
 from papercli.save import selected_builds, selected_mc_version, projects_list, build_name, versions_list, builds_list
 from papercli.textgen import project_list, version_group_list, build_list
 
@@ -11,7 +11,6 @@ from papercli.textgen import project_list, version_group_list, build_list
 def cli_main():
     """Main"""
     try:
-        projects()
         cliargs()
     except KeyboardInterrupt:
         # quit
