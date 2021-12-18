@@ -17,8 +17,8 @@ def cli_main():
         sys.exit(-1)
 
 
-def downloade(build, version, p_project, filename, your_filename):
-    """Downloade File"""
+def download(build, version, p_project, filename, your_filename):
+    """Download File"""
     url = f'https://papermc.io/api/v2/projects/{p_project}/versions/{version}/builds/{build}/downloads/{filename}'
     print(f'Downloading {p_project} build {build} for MC Version {version}')
     print(f'File will be saved as {your_filename}')
@@ -39,15 +39,15 @@ def cligui(your_filename):
     version = selected_mc_version[int(build_input) * 2 + 1]
     p_project = projects_list[int(project)]
     filename = build_name[int(build_input) * 2 + 1]
-    print(f'Do you want to Downloade {p_project} build {build} for MC version {version}?')
+    print(f'Do you want to Download {p_project} build {build} for MC version {version}?')
     if your_filename is None:
         your_filename = f'{p_project}.jar'
-    downloade_question = input('(y/n): ').lower()
-    if downloade_question == "y":
-        downloade(build, version, p_project, filename, your_filename)
-        print('Downloadet')
+    download_question = input('(y/n): ').lower()
+    if download_question == "y":
+        download(build, version, p_project, filename, your_filename)
+        print('Downloadt')
         sys.exit(0)
-    elif downloade_question == "n":
+    elif download_question == "n":
         print('exiting')
         sys.exit(0)
     else:
@@ -99,7 +99,7 @@ def fetch_latest(project_id, your_filename):
     latest_build = len(builds_list) - 1
     latest_build_info = build_info(project_id, latest_version, latest_build)
     filename = latest_build_info['downloads']['application']['name']
-    downloade(builds_list[-1], versions_list[-1], projects_list[project_id], filename, your_filename)
+    download(builds_list[-1], versions_list[-1], projects_list[project_id], filename, your_filename)
 
 
 def arg_check(args, your_filename):
@@ -132,7 +132,7 @@ def arg_check(args, your_filename):
             sys.exit(4)
         if your_filename is None:
             your_filename = str(projects_list[project_id]) + '.jar'
-        downloade(build, version, projects_list[project_id], filename, your_filename)
+        download(build, version, projects_list[project_id], filename, your_filename)
     except KeyError:
         print("an error ocurred please check your input")
         sys.exit(1)
