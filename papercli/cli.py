@@ -66,7 +66,7 @@ def cligui(destination):
         sys.exit(0)
 
 
-def user_select(choices: list[str], prompt: str | None =None, end="\n") -> int:
+def user_select(choices: list[str], prompt: str = None, end="\n") -> int:
     """
     Returns the index of the selected item
     """
