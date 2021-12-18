@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from api.requester import Requester
+from papercli.requester import Requester
 
 class Project():
     def __init__(self, id: str, requester: Requester):
@@ -86,7 +86,7 @@ class PaperApi():
         return [Project(x, self.requester) for x in self.get_project_ids()]
 
     def get_project(self, id: str) -> Project:
-        return Project(id, self.requester(id))
+        return Project(id, self.requester)
 
     def latest_project(self) -> Project:
         return self.get_projects()[-1]
@@ -99,4 +99,5 @@ class PaperApi():
 if __name__ == "__main__":
     p = PaperApi()
     proj = p.get_projects()[0]
-    print(proj.get_build("1.18.1", proj.get_build_numbers("1.18.1")[-1]).download("./test/"))
+    build = proj.get_build("1.18.1", proj.get_build_numbers("1.18.1")[-1])
+    build.download("./test/")

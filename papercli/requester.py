@@ -1,5 +1,5 @@
 import requests
-from api.exceptions import InternalServerError, ResourceNotFound
+from papercli.exceptions import InternalServerError, ResourceNotFound
 from urllib.parse import urljoin
 
 class Requester(requests.Session):

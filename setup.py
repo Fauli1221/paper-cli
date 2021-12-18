@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'paper-cli = papercli.papercli:cli_main',
+            'paper-cli = papercli.cli:cli_main',
         ],
     },
 )
