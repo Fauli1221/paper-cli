@@ -1,3 +1,3 @@
-from exceptions import InternalServerError, ResourceNotFound
-from papermcapi import PaperApi, Project, Build
-from requester import Requester
+from api.exceptions import InternalServerError, ResourceNotFound
+from api.papermcapi import PaperApi, Project, Build
+from api.requester import Requester

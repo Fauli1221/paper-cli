@@ -1,5 +1,5 @@
 import requests
-from exceptions import InternalServerError, ResourceNotFound
+from api.exceptions import InternalServerError, ResourceNotFound
 from urllib.parse import urljoin
 
 class Requester(requests.Session):
