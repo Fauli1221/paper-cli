@@ -1,76 +1,32 @@
 """import argparse sys urllib request and textgen and save"""
 import argparse
 import sys
-import urllib.request
 
-from api import PaperApi, Build
-from papercli.save import selected_builds, selected_mc_version, projects_list, build_name, versions_list, builds_list
-from papercli.textgen import project_list, version_group_list, build_list
-
+from papercli.paperapi import PaperApi, Build
 from colorama import Fore
 
 api: PaperApi = PaperApi()
 
+# CLI version
+VERSION = "0.3.0"
+
 def cli_main():
-    """Main"""
-    try:
-        cliargs()
-    except KeyboardInterrupt:
-        # quit
-        sys.exit(-1)
+    """
+    Main CLI method
+    """
 
-
-def download(build, version, p_project, filename, your_filename):
-    """Download File"""
-    url = f'https://papermc.io/api/v2/projects/{p_project}/versions/{version}/builds/{build}/downloads/{filename}'
-    print(f'Downloading {p_project} build {build} for MC Version {version}')
-    print(f'File will be saved as {your_filename}')
-    urllib.request.urlretrieve(url, fr'./{your_filename}')
-
-
-def cligui(your_filename):
-    """Cli GUI"""
-    print('Welcome to paper-cli please chose one of the following projects by there corresponding number')
-    project_list()
-    project = input('Your Input: ')
-    print('Next Please select your Target Minecraft Version')
-    version_group_list(int(project))
-    mcversion = input('Your Input: ')
-    build_list(int(project), int(mcversion))
-    build_input = input('Your Input: ')
-    build = selected_builds[int(build_input) * 2 + 1]
-    version = selected_mc_version[int(build_input) * 2 + 1]
-    p_project = projects_list[int(project)]
-    filename = build_name[int(build_input) * 2 + 1]
-    print(f'Do you want to Download {p_project} build {build} for MC version {version}?')
-    if your_filename is None:
-        your_filename = f'{p_project}.jar'
-    download_question = input('(y/n): ').lower()
-    if download_question == "y":
-        download(build, version, p_project, filename, your_filename)
-        print('Downloadt')
-        sys.exit(0)
-    elif download_question == "n":
-        print('exiting')
-        sys.exit(0)
-    else:
-        print('error invalid anser exeting')
-        sys.exit(1)
-
-
-def cliargs():
-    """create cli args"""
     project_ids = api.get_project_ids()
 
-    praser = argparse.ArgumentParser(description='Arguments')
-    praser.add_argument("--project", "-p", type=str, choices=project_ids,
+    parser = argparse.ArgumentParser(description='Arguments')
+    parser.add_argument("--project", "-p", type=str, choices=project_ids,
                         help=f"select the paper project {project_ids}")
-    praser.add_argument("--version", "-v", type=str, help="Select target Minecraft Version")
-    praser.add_argument("--build", "-b", type=int, help="Select Build")
-    praser.add_argument("--destination", "-d", type=str,
+    parser.add_argument("--mcversion", "-mcv", type=str, help="Select target Minecraft Version")
+    parser.add_argument("--build", "-b", type=int, help="Select Build")
+    parser.add_argument("--destination", "-d", type=str,
                         help="Select the destination of the file")
-    praser.add_argument("--latest", nargs='?', type=bool, const=True, help="Download latest version")
-    args = praser.parse_args()
+    parser.add_argument("--latest", nargs='?', type=bool, const=True, help="Download latest version")
+    parser.add_argument("--version", "-v", action="version", version=VERSION)
+    args = parser.parse_args()
     
     destination = None
     if args.destination:
@@ -84,21 +40,68 @@ def cliargs():
     else:
         arg_check(args, destination)
 
+
+def cligui(destination: str):
+    """
+    The interactive cli PaperMC downloader
+    """
+    
+    print("Welcome to paper-cli!")
+    project_ids = api.get_project_ids()
+    project = api.get_project(project_ids[user_select(project_ids, "select a project")])
+
+    mc_versions = project.get_versions()
+    mc_version = mc_versions[user_select(mc_versions, "select your target minecraft version")]
+
+    builds = project.get_build_numbers(mc_version)
+    build = project.get_build(mc_version, builds[user_select(builds, "select a build (lowest is latest)")])
+
+    if destination is None:
+        destination = "./"
+
+    if user_select(["yes", "no"], f"Do you want to download {project.id}, build {build.build} for MC version {build.version}?") == 0:
+        print(Fore.BLUE + "downloading...", Fore.RESET, end="\r")
+        build.download(destination)
+        print(Fore.GREEN + "download finished!")
+        sys.exit(0)
+    else:
+        print(Fore.RED + "exiting", Fore.RESET)
+        sys.exit(0)
+
+
+def user_select(choices: list[str], prompt: str = None, end="\n") -> int:
+    """
+    Displays the `choices` on the screen and
+    returns the index of the selected item
+    """
+    if prompt is not None:
+        print(Fore.MAGENTA, "===", prompt, "===", Fore.RESET)
+
+    for i, choice in enumerate(choices):
+        print(f"{Fore.CYAN}({Fore.WHITE}{i + 1}{Fore.CYAN}){Fore.RESET}: {choice}")
+    
+    index = int(input(f"Select (1-{len(choices)}): {Fore.BLUE}")) - 1
+    print(Fore.RESET, end)
+    return index
+
+
 def arg_check(args: list[str], destination: str):
-    """argument logik"""
+    """
+    Validate args & download build
+    """
     build: Build
     destination: str
 
-    if args.latest or not args.version:
+    if args.latest or not args.mcversion:
         build = api.latest_build()
-    elif args.version:
+    elif args.mcversion:
         if args.build:
-            build = api.get_project(args.project).get_build(args.version, args.build)
+            build = api.get_project(args.project).get_build(args.mcversion, args.build)
         else:
-            build = api.get_project(args.project).get_latest_build(args.version)
+            build = api.get_project(args.project).get_latest_build(args.mcversion)
     
     build.download(destination)
 
 
 if __name__ == "__main__":
-    pass
+    cligui("./")

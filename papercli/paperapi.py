@@ -1,8 +1,11 @@
 from __future__ import annotations
 import os
-from api.requester import Requester
+from papercli.requester import Requester
 
 class Project():
+    """
+    A class representing a PaperMC project, like `paper` 
+    """
     def __init__(self, id: str, requester: Requester):
         self.id: str = id
         self.requester: Requester = requester
@@ -30,6 +33,9 @@ class Project():
         return self.get_build(mc_version, self.get_build_numbers(mc_version)[-1])
 
 class Build():
+    """
+    A class representing a certain Build from the PaperMC API 
+    """
     def __init__(
         self, 
         project: Project,
@@ -56,6 +62,18 @@ class Build():
         return f"<PaperMC-build: {self.build}>"
     
     def download(self, destination_path: str) -> None:
+        """
+        Download this build to the destination path
+
+        Example 1:
+        ```py
+        my_build.download("./path/file.jar")
+        ```
+        Example 2:
+        ```py
+        my_build.download("./path/)
+        ```
+        """
         self.requester.download(
                 f"{self.project.id}/versions/{self.version}/builds/{self.build}/downloads/{self.downloads['application']['name']}", 
                 destination_path if destination_path[-4:] == ".jar" else os.path.join(destination_path, self.downloads["application"]["name"])
@@ -76,6 +94,9 @@ class Build():
         )
 
 class PaperApi():
+    """
+    The class used to interact with the PaperMC API
+    """
     def __init__(self, base_url: str = "https://papermc.io/api/v2/projects/") -> None:
         self.requester: Requester = Requester(base_url)
     
@@ -86,7 +107,7 @@ class PaperApi():
         return [Project(x, self.requester) for x in self.get_project_ids()]
 
     def get_project(self, id: str) -> Project:
-        return Project(id, self.requester(id))
+        return Project(id, self.requester)
 
     def latest_project(self) -> Project:
         return self.get_projects()[-1]
@@ -99,4 +120,5 @@ class PaperApi():
 if __name__ == "__main__":
     p = PaperApi()
     proj = p.get_projects()[0]
-    print(proj.get_build("1.18.1", proj.get_build_numbers("1.18.1")[-1]).download("./test/"))
+    build = proj.get_build("1.18.1", proj.get_build_numbers("1.18.1")[-1])
+    build.download("./test/")

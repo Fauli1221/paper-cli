@@ -4,3 +4,6 @@
 build/
 __pycache__
 paper_cli.egg-info/
+
+# Personal config files
+.prettierrc
