@@ -1,3 +1,7 @@
+"""
+Exceptions used
+"""
+
 class InternalServerError(Exception):
     """
     On 5xx response
