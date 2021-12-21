@@ -24,4 +24,4 @@ jobs:
 
       - name: Test
         working-directory: ./tests
-        run: python3 unittests.py
+        run: python3 __main__.py
