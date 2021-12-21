@@ -1,8 +1,16 @@
+"""
+Declare the Requester class
+"""
+
+from urllib.parse import urljoin
 import requests
 from papercli.exceptions import InternalServerError, ResourceNotFound
-from urllib.parse import urljoin
 
 class Requester(requests.Session):
+    """
+    A simple Requester used for fetching data
+    """
+
     def __init__(self, base_url: str) -> None:
         """
         Create a new Requester using a certain `base_url`
@@ -15,7 +23,8 @@ class Requester(requests.Session):
         self.base_url: str = base_url
         super().__init__()
 
-    def process_response(self, response: requests.Response, parse_json: bool = True) -> dict:
+    @staticmethod
+    def process_response(response: requests.Response) -> dict:
         """
         Can raise:
         -   `InternalServerError`
@@ -24,15 +33,12 @@ class Requester(requests.Session):
         status_code = response.status_code
         if str(status_code)[0] == "5":
             raise InternalServerError(status_code)
-        elif status_code == 404:
+        if status_code == 404:
             raise ResourceNotFound()
 
-        if parse_json:
-            return response.json()
-        else:
-            return response
+        return response.json()
 
-    def get(self, path: str, parse_json: bool = True) -> dict:
+    def get(self, path: str) -> dict:
         """
         Perform a `get` request to a certain `path` of the `base_url` with the `data`
 
@@ -41,7 +47,7 @@ class Requester(requests.Session):
         my_requester.get("useful/api/resource")
         ```
         """
-        return self.process_response(super().get(urljoin(self.base_url, path)), parse_json)
+        return self.process_response(super().get(urljoin(self.base_url, path)))
 
     def download(self, path: str, destination: str):
         """
@@ -53,6 +59,6 @@ class Requester(requests.Session):
         ```
         """
         with super().get(urljoin(self.base_url, path), stream=True) as res:
-            with open(destination, "wb") as f:
+            with open(destination, "wb") as file:
                 for chunk in res.iter_content(chunk_size=16*1024):
-                    f.write(chunk)
+                    file.write(chunk)
