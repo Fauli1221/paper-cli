@@ -5,6 +5,7 @@ Declare PaperMC Api resources
 from __future__ import annotations
 import os
 from papercli.requester import Requester
+import asyncio
 
 class Project():
     """
@@ -51,6 +52,17 @@ class Project():
             self,
             self.requester
         )
+    
+    async def get_build_coro(self, mc_version: str, build: int) -> Build:
+        """
+        Get a certain build as a Build instance
+        """
+
+        return Build.from_json(
+            self.requester.get(f"{self.id}/versions/{mc_version}/builds/{build}"),
+            self,
+            self.requester
+        )
 
     def get_latest_build(self, mc_version: str) -> Build:
         """
@@ -58,6 +70,31 @@ class Project():
         """
 
         return self.get_build(mc_version, self.get_build_numbers(mc_version)[-1])
+
+    async def get_all_builds_coro(self, mc_version: str, builds: list[Build]) -> list[Build]:
+        """
+        Coroutine for getting all builds
+        """
+
+        coros = []
+        for num in self.get_build_numbers(mc_version):
+            coros.append(self.get_build_coro(mc_version, num))
+        builds += await asyncio.gather(*coros, return_exceptions=True)
+        return builds
+    
+    def get_all_builds(self, mc_version: str) -> list[Build]:
+        """
+        Get all builds(requested asynchronously)
+        """
+
+        # Create a new empty list of Builds
+        builds: list[Build] = []
+
+        # Run the `get_all_builds` coroutine with the version, and the reference of the builds list
+        asyncio.run(self.get_all_builds_coro(mc_version, builds))
+
+        # Return the builds, after they were mutated by their reference
+        return builds
 
 class Build():
     """
@@ -180,5 +217,4 @@ class PaperApi():
 if __name__ == "__main__":
     p = PaperApi()
     proj = p.get_projects()[0]
-    build = proj.get_build("1.18.1", proj.get_build_numbers("1.18.1")[-1])
-    build.download("./test/")
+    print(proj.get_all_builds("1.18.1"))
