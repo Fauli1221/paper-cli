@@ -3,6 +3,7 @@ Declare PaperMC Api resources
 """
 
 from __future__ import annotations
+from datetime import datetime
 import os
 from papercli.requester import Requester
 import asyncio
@@ -34,12 +35,12 @@ class Project():
 
         return self.requester.get(self.id)["version_groups"]
 
-    def get_build_numbers(self, mc_version: str) -> list[str]:
+    def get_build_numbers(self, mc_version: str) -> list[int]:
         """
         Get the numbers of all available builds for this project
         """
 
-        return self.requester.get(f"{self.id}/versions/{mc_version}")["builds"]
+        return [int(num) for num in self.requester.get(f"{self.id}/versions/{mc_version}")["builds"]]
 
     # pylint: disable=redefined-outer-name
     def get_build(self, mc_version: str, build: int) -> Build:
@@ -71,27 +72,36 @@ class Project():
 
         return self.get_build(mc_version, self.get_build_numbers(mc_version)[-1])
 
-    async def get_all_builds_coro(self, mc_version: str, builds: list[Build]) -> list[Build]:
+    async def get_all_builds_coro(self, mc_version: str, builds: list[Build], build_numbers: list[int] = None) -> list[Build]:
         """
         Coroutine for getting all builds
         """
 
+        if not build_numbers:
+            build_numbers = self.get_build_numbers(mc_version)
+
         coros = []
-        for num in self.get_build_numbers(mc_version):
+        for num in build_numbers:
             coros.append(self.get_build_coro(mc_version, num))
-        builds += await asyncio.gather(*coros, return_exceptions=True)
+        builds += await asyncio.gather(*coros)
         return builds
     
-    def get_all_builds(self, mc_version: str) -> list[Build]:
+    def get_all_builds(self, mc_version: str, build_numbers: list[int] = None) -> list[Build]:
         """
         Get all builds(requested asynchronously)
+
+        mc_version (str): 
+            your target minecraft version
+
+        build_numbers (list[int]): 
+            the numbers of the builds you want to get (default are all)
         """
 
         # Create a new empty list of Builds
         builds: list[Build] = []
 
         # Run the `get_all_builds` coroutine with the version, and the reference of the builds list
-        asyncio.run(self.get_all_builds_coro(mc_version, builds))
+        asyncio.run(self.get_all_builds_coro(mc_version, builds, build_numbers))
 
         # Return the builds, after they were mutated by their reference
         return builds
@@ -117,7 +127,7 @@ class Build():
         self.requester = requester
         self.version = version
         self.build = build
-        self.time = time
+        self.time: str = time.split("T")[0].replace("-", ".")
         self.channel = channel
         self.promoted = promoted
         self.changes = changes
@@ -125,6 +135,9 @@ class Build():
 
     def __repr__(self) -> str:
         return f"<PaperMC-build: {self.build}>"
+
+    def __str__(self) -> str:
+        return f"{self.build}, {self.channel}, {self.time}{', promoted' if self.promoted else ''}"
 
     def download(self, destination_path: str) -> None:
         """

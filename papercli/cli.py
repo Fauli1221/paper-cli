@@ -1,7 +1,11 @@
 """import argparse sys urllib request and textgen and save"""
 import argparse
 import sys
+from time import sleep
+from typing import Any, Callable
 from rich.console import Console
+import keyboard
+import os
 
 from papercli.paperapi import PaperApi, Build
 
@@ -26,6 +30,7 @@ def cli_main():
     parser.add_argument("--destination", "-d", type=str,
                         help="Select the destination of the file")
     parser.add_argument("--latest", nargs='?', type=bool, const=True, help="Download latest version")
+    parser.add_argument("--experimental", nargs='?', type=bool, const=True, default=False, help="Use the experimental cligui")
     parser.add_argument("--version", "-v", action="version", version=VERSION)
     args = parser.parse_args()
 
@@ -35,36 +40,57 @@ def cli_main():
 
     # Start interactive cli
     if args.project is None:
-        cligui(destination)
+        cli_gui(destination, args.experimental)
 
     # Download build from flag information
     else:
         arg_check(args, destination)
 
 
-def cligui(destination: str):
+def cli_gui(destination: str = "./", experimental: bool = False):
     """
     The interactive cli PaperMC downloader
     """
+    select: Callable[[list], int] = fancy_user_select if experimental else simple_user_select
 
-    print("Welcome to paper-cli!")
-    project_ids = api.get_project_ids()
-    project = api.get_project(project_ids[user_select(project_ids, "select a project")])
+    console.print(
+        "[bold yellow3]--- === welcome to the paper-cli! === ---[/bold yellow3]",
+        f"[grey23]press {'any key' if experimental else 'enter'} to start the selection[/grey23]",
+        sep="\n"
+    )
+    if experimental:
+        keyboard.read_key()
+    else:
+        input()
 
-    mc_versions = project.get_versions()
-    mc_version = mc_versions[user_select(mc_versions, "select your target minecraft version")]
+    with console.status("", spinner="dots"):
+        project_ids = api.get_project_ids()
+    project = api.get_project(project_ids[select(project_ids, prompt="select a project")])
 
-    builds = project.get_build_numbers(mc_version)
-    build = project.get_build(mc_version, builds[user_select(builds, "select a build (lowest is latest)")])
+    with console.status("", spinner="dots"):
+        mc_version_groups = project.get_version_groups()
+    mc_version_group = mc_version_groups[select(mc_version_groups, prompt="select your minecraft version group")]
 
-    if destination is None:
-        destination = "./"
+    with console.status("", spinner="dots"):
+        # Get all versions that start with the 
+        # selected version group in a list
+        mc_versions = list(filter(
+            lambda x: x.startswith(mc_version_group),
+            project.get_versions()    
+        ))
+    mc_version = mc_versions[select(mc_versions, prompt="select your target minecraft version")]
 
-    if user_select(
+    with console.status("", spinner="dots"):
+        builds = project.get_all_builds(mc_version)
+    
+    render = lambda choice, selected: choice.build if not selected else str(choice)
+    build = builds[select(builds, render=render, prompt="select a build (lowest is latest)")]
+
+    if select(
         ["yes", "no"],
-        f"Do you want to download {project.id}, build {build.build} for MC version {build.version}?"
+        prompt=f"Do you want to download {project.id}, build {build.build} for MC version {build.version}?"
        ) == 0:
-        with console.status("[bold green]downloading...", spinner="aesthetic"):
+        with console.status("[bold green]downloading",spinner="aesthetic"):
             build.download(destination)
         console.print(
             f"[bold green]Successfully downloaded {project.id}, version {build.version} to {destination}[/bold green]"
@@ -75,20 +101,71 @@ def cligui(destination: str):
         sys.exit(0)
 
 
-def user_select(choices: list[str], prompt: str = None) -> int:
+def simple_user_select(choices: list[str], prompt: str = None, new_line: bool = True,render=None) -> int:
     """
     Displays the `choices` on the screen and
     returns the index of the selected item
     """
-    if prompt is not None:
+    if prompt:
         console.print(f"[bold magenta]=== {prompt} ===[/bold magenta]")
 
     for i, choice in enumerate(choices):
-        console.print(f"[cyan]([b]{i + 1}[/b])[/cyan]: {choice}")
+        console.print(f"[cyan]([b]{i + 1}[/b])[/cyan]: [white]{choice}[/white]")
 
-    index = int(console.input(f"Select (1-{len(choices)}): ")) - 1
+    index: int = None
+    while index is None or index > len(choices) - 1 or index < 0:
+        try:
+            index = int(console.input(f"Select (1-{len(choices)}): ")) - 1
+        except ValueError:
+            console.print("[red]please enter a valid number[/red]")
+    if new_line: print()
     return index
 
+def fancy_user_select(
+    choices: list, 
+    render: Callable[[Any, bool], str] = lambda choice, _: choice, 
+    prompt: str = None
+    ) -> int:
+    selected = 0
+    
+    def print_state():
+        """
+        Print the current state of the selection
+        """
+        
+        # Clear the terminal screen
+        os.system("cls||clear")
+
+        if prompt:
+            console.print(f"[bold magenta]=== {prompt} ===[/bold magenta]")
+        console.print("[grey23]use 'w' and 's' for selection[/grey23]", end="\n\n")
+
+        for i, choice in enumerate(choices):
+            if i == selected:
+                console.print(f"[bold cyan]> {render(choice, True)}[/bold cyan]")
+            else:
+                console.print(f"[grey46]{render(choice, False)}[/grey46]")
+
+    print_state()
+
+    while True:
+        sleep(.1)
+        pressed_key = keyboard.read_key()
+
+        if pressed_key == "w": 
+            if selected > 0:
+                selected -= 1
+            else:
+                selected = len(choices) - 1 
+        elif pressed_key == "s":
+            if selected < len(choices) - 1:
+                selected += 1
+            else:
+                selected = 0
+        elif pressed_key == "enter":
+            return selected
+        
+        print_state()
 
 def arg_check(args: list[str], destination: str):
     """
@@ -112,4 +189,4 @@ def arg_check(args: list[str], destination: str):
 
 
 if __name__ == "__main__":
-    cligui("./")
+    cli_gui()
