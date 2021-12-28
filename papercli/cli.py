@@ -1,10 +1,11 @@
 """import argparse sys urllib request and textgen and save"""
 import argparse
 import sys
+from rich.console import Console
 
 from papercli.paperapi import PaperApi, Build
-from colorama import Fore
 
+console = Console()
 api: PaperApi = PaperApi()
 
 # CLI version
@@ -27,7 +28,7 @@ def cli_main():
     parser.add_argument("--latest", nargs='?', type=bool, const=True, help="Download latest version")
     parser.add_argument("--version", "-v", action="version", version=VERSION)
     args = parser.parse_args()
-    
+
     destination = None
     if args.destination:
         destination = args.destination
@@ -45,7 +46,7 @@ def cligui(destination: str):
     """
     The interactive cli PaperMC downloader
     """
-    
+
     print("Welcome to paper-cli!")
     project_ids = api.get_project_ids()
     project = api.get_project(project_ids[user_select(project_ids, "select a project")])
@@ -59,29 +60,33 @@ def cligui(destination: str):
     if destination is None:
         destination = "./"
 
-    if user_select(["yes", "no"], f"Do you want to download {project.id}, build {build.build} for MC version {build.version}?") == 0:
-        print(Fore.BLUE + "downloading...", Fore.RESET, end="\r")
-        build.download(destination)
-        print(Fore.GREEN + "download finished!")
+    if user_select(
+        ["yes", "no"],
+        f"Do you want to download {project.id}, build {build.build} for MC version {build.version}?"
+       ) == 0:
+        with console.status("[bold green]downloading...", spinner="aesthetic"):
+            build.download(destination)
+        console.print(
+            f"[bold green]Successfully downloaded {project.id}, version {build.version} to {destination}[/bold green]"
+        )
         sys.exit(0)
     else:
-        print(Fore.RED + "exiting", Fore.RESET)
+        console.print("[bold red]exiting...[/bold red]")
         sys.exit(0)
 
 
-def user_select(choices: list[str], prompt: str = None, end="\n") -> int:
+def user_select(choices: list[str], prompt: str = None) -> int:
     """
     Displays the `choices` on the screen and
     returns the index of the selected item
     """
     if prompt is not None:
-        print(Fore.MAGENTA, "===", prompt, "===", Fore.RESET)
+        console.print(f"[bold magenta]=== {prompt} ===[/bold magenta]")
 
     for i, choice in enumerate(choices):
-        print(f"{Fore.CYAN}({Fore.WHITE}{i + 1}{Fore.CYAN}){Fore.RESET}: {choice}")
-    
-    index = int(input(f"Select (1-{len(choices)}): {Fore.BLUE}")) - 1
-    print(Fore.RESET, end)
+        console.print(f"[cyan]([b]{i + 1}[/b])[/cyan]: {choice}")
+
+    index = int(console.input(f"Select (1-{len(choices)}): ")) - 1
     return index
 
 
@@ -90,7 +95,6 @@ def arg_check(args: list[str], destination: str):
     Validate args & download build
     """
     build: Build
-    destination: str
 
     if args.latest or not args.mcversion:
         build = api.latest_build()
@@ -99,8 +103,12 @@ def arg_check(args: list[str], destination: str):
             build = api.get_project(args.project).get_build(args.mcversion, args.build)
         else:
             build = api.get_project(args.project).get_latest_build(args.mcversion)
-    
-    build.download(destination)
+
+    with console.status("[bold green]downloading...", spinner="aesthetic"):
+        build.download(destination)
+    console.print(
+        f"[bold green]Successfully downloaded build {build.build}, version {build.version} to {destination}[/bold green]"
+    )
 
 
 if __name__ == "__main__":

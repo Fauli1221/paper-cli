@@ -7,3 +7,4 @@ paper_cli.egg-info/
 
 # Personal config files
 .prettierrc
+.vscode/
