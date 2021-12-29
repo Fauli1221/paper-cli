@@ -3,7 +3,6 @@ Declare PaperMC Api resources
 """
 
 from __future__ import annotations
-from datetime import datetime
 import os
 from papercli.requester import Requester
 import asyncio
