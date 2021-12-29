@@ -6,7 +6,8 @@ setup(
     packages=['papercli'],
     install_requires=[
         'requests',
-        'rich'
+        'rich',
+        'keyboard'
     ],
     entry_points={
         'console_scripts': [
