@@ -156,7 +156,7 @@ class Build():
         self.requester.download(
                 f"{self.project.id}/versions/{self.version}/builds/{self.build}/downloads/{self.downloads['application']['name']}",
                 destination_path
-                    if destination_path[-4:] == ".jar"
+                    if destination_path.endswith(".jar")
                     else os.path.join(destination_path, self.downloads["application"]["name"])
             )
 
