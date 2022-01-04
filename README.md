@@ -7,11 +7,11 @@ Configure & download [PaperMC](https://papermc.io/) servers using the command li
 ## Usage
 
 ```sh
-paper-cli [ARGUMENTS]
+paper-cli [options]
 ```
 
 ```sh
-ARGUMENTS:
+options:
   -h, --help            show this help message and exit
   --project {paper,travertine,waterfall,velocity}, -p {paper,travertine,waterfall,velocity}
                         select the paper project ['paper', 'travertine', 'waterfall', 'velocity']
@@ -22,6 +22,8 @@ ARGUMENTS:
   --destination DESTINATION, -d DESTINATION
                         Select the destination of the file
   --latest [LATEST]     Download latest version
+  --experimental [EXPERIMENTAL]
+                        Use the experimental cligui
   --version, -v         show program's version number and exit
 ```
 
