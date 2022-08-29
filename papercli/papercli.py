@@ -20,7 +20,7 @@ def cli_main():
 
 def downloade(build, version, p_project, filename, your_filename):
     """Downloade File"""
-    url = f'https://papermc.io/api/v2/projects/{p_project}/versions/{version}/builds/{build}/downloads/{filename}'
+    url = f'https://api.papermc.io/v2/projects/{p_project}/versions/{version}/builds/{build}/downloads/{filename}'
     print(f'Downloading {p_project} build {build} for MC Version {version}')
     print(f'File will be saved as {your_filename}')
     urllib.request.urlretrieve(url, fr'./{your_filename}')
