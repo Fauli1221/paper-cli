@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='paper-cli',
-    version='0.2.0',
+    version='0.2.2',
     packages=['papercli'],
     install_requires=[
         'requests',
